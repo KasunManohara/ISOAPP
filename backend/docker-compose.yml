@@ -1,0 +1,38 @@
+services:
+  mongo:
+    image: mongo
+    container_name: mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db
+
+  auth-service:
+    build: ./auth-service
+    ports:
+      - '3001:3001'
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/checklist_auth
+    depends_on:
+      - mongo
+
+  location-service:
+    build: ./location-service
+    ports:
+      - '3002:3002'
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/checklist_location
+    depends_on:
+      - mongo
+
+  checklist-service:
+    build: ./checklist-service
+    ports:
+      - '3003:3003'
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/checklist_data
+    depends_on:
+      - mongo
+
+volumes:
+  mongo_data:
